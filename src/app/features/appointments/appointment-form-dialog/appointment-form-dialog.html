@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit appointment' : 'Add appointment' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content class="dialog-form">
+    <mat-form-field>
+      <mat-label>Customer</mat-label>
+      <mat-select formControlName="customerId">
+        @for (customer of customers(); track customer.id) {
+          <mat-option [value]="customer.id">{{ customer.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Date and time</mat-label>
+      <input matInput type="datetime-local" formControlName="appointmentDate" />
+      <mat-error>Choose a date and time</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit">Save appointment</button>
+  </mat-dialog-actions>
+</form>

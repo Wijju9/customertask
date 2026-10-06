@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Add employee</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content class="dialog-form">
+    <mat-form-field>
+      <mat-label>Mobile number</mat-label>
+      <input matInput formControlName="mobileNo" inputmode="numeric" maxlength="10" cdkFocusInitial />
+      @if (form.controls.mobileNo.hasError('mobileTaken')) {
+        <mat-error>This mobile number is already registered</mat-error>
+      } @else {
+        <mat-error>Enter a valid 10-digit mobile number</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+      @if (form.controls.email.hasError('emailTaken')) {
+        <mat-error>This email is already registered</mat-error>
+      } @else {
+        <mat-error>Enter a valid email address</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" autocomplete="new-password" />
+      <mat-error>Use at least {{ minPasswordLength }} characters</mat-error>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit">Add employee</button>
+  </mat-dialog-actions>
+</form>

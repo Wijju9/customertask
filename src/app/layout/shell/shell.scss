@@ -1,0 +1,42 @@
+.shell {
+  height: 100vh;
+  background: var(--mat-sys-surface);
+}
+
+.sidenav {
+  width: 232px;
+}
+
+.brand {
+  padding: 22px 24px 12px;
+  font-family: var(--fd-heading-font);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--mat-sys-primary);
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.user-button .user-email {
+  margin-left: 4px;
+
+  @media (max-width: 500px) {
+    display: none;
+  }
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+}

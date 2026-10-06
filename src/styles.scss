@@ -1,38 +1,233 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+
+// ==========================================================================
+// 1. THEME
+//    Angular Material builds its colours from a "palette". We define one
+//    block per palette. The ThemeService sets <html data-palette="..."> and
+//    <html style="color-scheme: ..."> so the right block and the light/dark
+//    mode are applied. Dark mode needs no extra code: Material's colours use
+//    the CSS light-dark() function, which follows `color-scheme`.
+//
+//    To add a palette: add a block below and an entry in PALETTES
+//    (src/app/core/services/theme.service.ts).
+// ==========================================================================
+
+@mixin palette($primary, $tertiary) {
+  @include mat.theme(
+    (
+      color: (
+        primary: $primary,
+        tertiary: $tertiary,
+      ),
+      // Fallbacks keep the text sans-serif if the Roboto web font is slow or blocked.
+      typography: (
+        plain-family: 'Roboto, "Segoe UI", system-ui, sans-serif',
+        brand-family: 'Roboto, "Segoe UI", system-ui, sans-serif',
+        bold-weight: 700,
+        medium-weight: 500,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+}
 
 html {
   height: 100%;
-  @include mat.theme((
-    color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  color-scheme: light dark;
+  @include palette(mat.$spring-green-palette, mat.$cyan-palette); // default = emerald
 }
+
+html[data-palette='emerald'] {
+  @include palette(mat.$spring-green-palette, mat.$cyan-palette);
+}
+html[data-palette='azure'] {
+  @include palette(mat.$azure-palette, mat.$blue-palette);
+}
+html[data-palette='violet'] {
+  @include palette(mat.$violet-palette, mat.$rose-palette);
+}
+html[data-palette='rose'] {
+  @include palette(mat.$rose-palette, mat.$orange-palette);
+}
+
+// ==========================================================================
+// 2. APP COLOURS
+//    Status colours are not part of Material, so we define them here.
+//    light-dark(<light value>, <dark value>) picks the right one for the mode.
+// ==========================================================================
+
+:root {
+  --fd-pending-bg: light-dark(#fdf3dc, #3a3220);
+  --fd-pending-fg: light-dark(#8a5a12, #f0c261);
+  --fd-process-bg: light-dark(#e3eefa, #1f2f43);
+  --fd-process-fg: light-dark(#1f5a96, #7db4ee);
+  --fd-done-bg: light-dark(#e2f5ea, #1c3328);
+  --fd-done-fg: light-dark(#2a6f4b, #6fd29a);
+  --fd-off-bg: var(--mat-sys-surface-container-high);
+  --fd-off-fg: var(--mat-sys-on-surface-variant);
+
+  --fd-heading-font: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+}
+
+// ==========================================================================
+// 3. BASE
+// ==========================================================================
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
   height: 100%;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-large);
 }
-/* You can add global styles to this file, and also import other style files */
+
+h1,
+h2,
+h3 {
+  font-family: var(--fd-heading-font);
+  font-weight: 600;
+  margin: 0;
+}
+
+a {
+  color: var(--mat-sys-primary);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.8125rem;
+}
+
+// ==========================================================================
+// 4. SHARED PAGE PARTS (used by every feature page)
+// ==========================================================================
+
+.page {
+  padding: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  @media (max-width: 800px) {
+    padding: 16px;
+  }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 1.75rem;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  mat-form-field {
+    width: 260px;
+    max-width: 100%;
+  }
+}
+
+.table-card {
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: hidden;
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 720px;
+    background: transparent;
+  }
+
+  td,
+  th {
+    vertical-align: middle;
+  }
+
+  td {
+    padding-block: 10px;
+  }
+
+  td.nowrap {
+    white-space: nowrap;
+  }
+}
+
+.empty {
+  padding: 36px 16px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.row-actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+// Status pill: "Pending", "Process", "Done" and "Inactive".
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 0;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font: var(--mat-sys-label-large);
+  background: var(--fd-off-bg);
+  color: var(--fd-off-fg);
+
+  &.status-pending {
+    background: var(--fd-pending-bg);
+    color: var(--fd-pending-fg);
+  }
+  &.status-process {
+    background: var(--fd-process-bg);
+    color: var(--fd-process-fg);
+  }
+  &.status-done {
+    background: var(--fd-done-bg);
+    color: var(--fd-done-fg);
+  }
+
+  &.clickable {
+    cursor: pointer;
+  }
+}
+
+// Small "Doc 1" label.
+.doc-chip {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 0 6px;
+  margin: 0 3px 3px 0;
+  font-size: 0.75rem;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+// Dialog forms: stack fields vertically.
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: min(480px, 80vw);
+}

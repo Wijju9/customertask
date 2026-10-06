@@ -1,0 +1,55 @@
+<div class="page">
+  <div class="page-header">
+    <h2>Dashboard</h2>
+    <span class="muted">{{ auth.isAdmin() ? 'All team activity' : 'Your assigned files' }}</span>
+  </div>
+
+  <div class="stats">
+    @for (stat of stats(); track stat.label) {
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <strong class="value">{{ stat.value }}</strong>
+          <span class="muted">{{ stat.label }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+    @if (auth.isAdmin()) {
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <strong class="value">{{ activeEmployeeCount() }}</strong>
+          <span class="muted">Active employees</span>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+
+  <div class="panels">
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Tasks by work</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @for (row of tasksByWork(); track row.name) {
+          <div class="bar-row">
+            <span class="bar-label">{{ row.name }}</span>
+            <mat-progress-bar mode="determinate" [value]="row.percent" />
+            <strong>{{ row.count }}</strong>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Upcoming appointments</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @for (appointment of upcoming(); track appointment.id) {
+          <p class="appointment">
+            <strong>{{ appointment.appointmentDate | date: 'd MMM, h:mm a' }}</strong>
+            – {{ customerName(appointment.customerId) }}<br />
+            <span class="muted">{{ appointment.notes }}</span>
+          </p>
+        } @empty {
+          <div class="empty">No upcoming appointments.</div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

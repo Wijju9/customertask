@@ -1,0 +1,36 @@
+.auth-form {
+  width: 100%;
+  max-width: 400px;
+
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 4px;
+  }
+
+  form {
+    margin-top: 20px;
+  }
+}
+
+.error {
+  color: var(--mat-sys-error);
+  font-size: 0.875rem;
+  margin: 0 0 12px;
+}
+
+.submit {
+  height: 48px;
+}
+
+.switch {
+  margin-top: 20px;
+}
+
+.demo {
+  margin-top: 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}

@@ -1,0 +1,45 @@
+.theme-panel {
+  padding: 8px 16px 12px;
+  min-width: 250px;
+}
+
+.heading {
+  margin: 8px 0;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+mat-button-toggle mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.swatches {
+  display: flex;
+  gap: 12px;
+}
+
+.swatch {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+
+  &.selected {
+    border-color: var(--mat-sys-on-surface);
+  }
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}

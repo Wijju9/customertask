@@ -1,0 +1,22 @@
+<div class="auth">
+  <section class="hero">
+    <span class="brand">FileDesk</span>
+    <div class="pitch">
+      <h1>Every customer file, one desk.</h1>
+      <p>
+        Track passports, visas, tax returns, GST and company registrations, and keep your team
+        and appointments in sync.
+      </p>
+    </div>
+    <ul class="services">
+      @for (service of services; track service) {
+        <li>{{ service }}</li>
+      }
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="theme-slot"><app-theme-picker /></div>
+    <div class="form-area"><router-outlet /></div>
+  </section>
+</div>

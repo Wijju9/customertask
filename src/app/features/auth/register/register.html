@@ -1,0 +1,45 @@
+<div class="auth-form">
+  <h2>Create employee account</h2>
+  <p class="muted">Admins can see and manage your account once you register.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field class="full-width">
+      <mat-label>Mobile number (10 digits)</mat-label>
+      <input matInput formControlName="mobileNo" inputmode="numeric" maxlength="10" />
+      @if (form.controls.mobileNo.hasError('mobileTaken')) {
+        <mat-error>This mobile number is already registered</mat-error>
+      } @else {
+        <mat-error>Enter a valid 10-digit mobile number</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" autocomplete="email" />
+      @if (form.controls.email.hasError('emailTaken')) {
+        <mat-error>This email is already registered</mat-error>
+      } @else {
+        <mat-error>Enter a valid email address</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Password (min {{ minPasswordLength }} characters)</mat-label>
+      <input matInput type="password" formControlName="password" autocomplete="new-password" />
+      <mat-error>Use at least {{ minPasswordLength }} characters</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Confirm password</mat-label>
+      <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" />
+    </mat-form-field>
+
+    @if (form.hasError('passwordsMismatch') && form.controls.confirmPassword.touched) {
+      <p class="error" role="alert">Passwords do not match.</p>
+    }
+
+    <button mat-flat-button class="full-width submit">Register</button>
+  </form>
+
+  <p class="switch">Already registered? <a routerLink="/auth/login">Log in</a></p>
+</div>

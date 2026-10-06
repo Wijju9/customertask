@@ -1,0 +1,50 @@
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px;
+  }
+
+  .value {
+    font-family: var(--fd-heading-font);
+    font-size: 2.25rem;
+    line-height: 1.1;
+  }
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+
+  mat-card-title {
+    font-family: var(--fd-heading-font);
+    padding-bottom: 8px;
+  }
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 24px;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  font-size: 0.8125rem;
+
+  strong {
+    text-align: right;
+  }
+}
+
+.appointment {
+  margin: 8px 0;
+}

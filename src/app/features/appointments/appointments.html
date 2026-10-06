@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="page-header">
+    <h2>Appointments</h2>
+    @if (auth.isAdmin()) {
+      <button mat-flat-button (click)="openForm()"><mat-icon>add</mat-icon> Add appointment</button>
+    }
+  </div>
+
+  <div class="table-card">
+    <div class="table-scroll">
+      <table mat-table [dataSource]="list()">
+        <ng-container matColumnDef="when">
+          <th mat-header-cell *matHeaderCellDef>When</th>
+          <td mat-cell *matCellDef="let appointment">
+            <strong>{{ appointment.appointmentDate | date: 'd MMM, h:mm a' }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Customer</th>
+          <td mat-cell *matCellDef="let appointment">{{ customerName(appointment) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="notes">
+          <th mat-header-cell *matHeaderCellDef>Notes</th>
+          <td mat-cell *matCellDef="let appointment">{{ appointment.notes }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let appointment" class="row-actions">
+            <button mat-icon-button aria-label="Edit appointment" matTooltip="Edit" (click)="openForm(appointment)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button aria-label="Delete appointment" matTooltip="Delete" (click)="delete(appointment)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+      </table>
+    </div>
+
+    @if (!list().length) {
+      <div class="empty">No appointments yet.</div>
+    }
+  </div>
+</div>

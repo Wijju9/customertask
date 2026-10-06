@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="page-header">
+    <h2>{{ label() }}s</h2>
+    <button mat-flat-button (click)="add()"><mat-icon>add</mat-icon> Add {{ label().toLowerCase() }}</button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-scroll">
+      <table mat-table [dataSource]="items()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let item"><strong>{{ item.name }}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="status-pill" [class.status-done]="item.isActive">
+              {{ item.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="usage">
+          <th mat-header-cell *matHeaderCellDef>In use</th>
+          <td mat-cell *matCellDef="let item" class="muted">
+            {{ usage(item) }} {{ usage(item) === 1 ? 'task' : 'tasks' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let item" class="row-actions">
+            <button mat-icon-button aria-label="Edit name" matTooltip="Edit" (click)="rename(item)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              [attr.aria-label]="item.isActive ? 'Deactivate' : 'Activate'"
+              [matTooltip]="item.isActive ? 'Deactivate' : 'Activate'"
+              (click)="toggleActive(item)"
+            >
+              <mat-icon>{{ item.isActive ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              aria-label="Delete"
+              [matTooltip]="usage(item) ? 'In use by tasks' : 'Delete'"
+              [disabled]="usage(item) > 0"
+              (click)="delete(item)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+  </div>
+</div>
