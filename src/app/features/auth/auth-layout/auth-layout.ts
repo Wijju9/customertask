@@ -10,5 +10,5 @@ import { ThemePicker } from '../../../layout/theme-picker/theme-picker';
   styleUrl: './auth-layout.scss',
 })
 export class AuthLayout {
-  protected readonly services = ['Passport', 'Visa', 'Income Tax', 'GST', 'Company'];
+  protected readonly services = ['Rent Aggreement', 'MOU', 'Heritance Certificate', 'Partnership Deed', 'Dastavej', 'Notery', 'Power of Attorney', 'Notice'];
 }

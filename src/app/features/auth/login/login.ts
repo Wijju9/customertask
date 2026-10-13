@@ -4,8 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserService } from '../../../core/services/user.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +18,8 @@ import { AuthService } from '../../../core/services/auth.service';
 export class Login {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly form = inject(FormBuilder).nonNullable.group({
     identifier: ['', Validators.required],
@@ -24,6 +28,7 @@ export class Login {
 
   protected readonly errorMessage = signal('');
   protected readonly hidePassword = signal(true);
+  protected readonly loading = signal(false);
 
   /** Ready-made accounts so the demo is easy to try. */
   protected readonly demoAccounts = [
@@ -43,12 +48,60 @@ export class Login {
     }
 
     const { identifier, password } = this.form.getRawValue();
-    const error = this.auth.login(identifier, password);
+    this.auth
+      .login(identifier, password)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: () => this.router.navigateByUrl(this.returnUrl()),
+        error: () => this.form.controls.password.reset(),
+      });
 
-    if (error) {
-      this.errorMessage.set(error);
-    } else {
-      this.router.navigateByUrl('/dashboard');
-    }
+    // this.userService.Login({ Email: identifier, Password: password }).subscribe({
+    //   next: (response) => {
+    //     console.log('Login response:', response);
+    //     if (response.Status) {
+    //       // Handle successful login, e.g., store token, navigate to dashboard
+    //       //this.router.navigateByUrl('/dashboard');
+    //       this.auth.login(response.Data, response.Data.Token);
+
+    //     } else {
+    //       this.errorMessage.set(response.Message || 'Login failed. Please try again.');
+    //     }
+    //   },
+    //   error: (err) => {
+    //     this.errorMessage.set('An error occurred during login. Please try again later.');
+    //   },
+    // });
+
+    // const error = this.auth.login(identifier, password);
+    // console.log('Login error:', error);
+    // if (error) {
+    //   // this.errorMessage.set(error.toString());
+
+    // } else {
+    //   this.router.navigateByUrl('/dashboard');
+    // }
+
+    // this.auth.login(identifier, password)
+    //   .subscribe({
+    //     next: (response) => {
+    //       // console.log('Login response:', response);
+    //       if (response.Status) {
+    //         this.router.navigateByUrl('/dashboard');
+    //       } else {
+    //         console.log('Login failed 1 :', response.Message);
+    //         this.errorMessage.set(response.Message || 'Login failed. Please try again.');
+    //       }
+    //     },
+    //     error: (err) => {
+    //       console.log('Login failed 2 :', err.error.Message);
+    //       this.errorMessage.set(err.error.Message.toString());
+    //     }
+    //   })
+  }
+
+  private returnUrl(): string {
+    const url = this.route.snapshot.queryParamMap.get('returnUrl');
+    return url && url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/auth') ? url : '/dashboard';
   }
 }

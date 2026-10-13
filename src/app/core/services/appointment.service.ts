@@ -37,7 +37,7 @@ export class AppointmentService {
       const appointment: Appointment = {
         ...input,
         id: this.store.nextId(db.appointments),
-        adminId: this.auth.currentUser()?.id ?? 1,
+        adminId: this.auth.currentUser()?.Id ?? 1,
         isActive: true,
       };
       return { ...db, appointments: [...db.appointments, appointment] };

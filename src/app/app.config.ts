@@ -2,10 +2,33 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
+import { provideToastr } from 'ngx-toastr';
+import { environment } from '../environments/environment';
+import { BASE_URL, baseUrlInterceptor } from './core/interceptors/base-url-interceptor';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { apiInterceptor } from './core/interceptors/api-interceptor';
+import { errorInterceptor } from './core/interceptors/error-interceptor';
+
+
+// Http interceptor providers in outside-in order
+const interceptors = [
+  baseUrlInterceptor,
+  apiInterceptor,
+  errorInterceptor,
+];
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: BASE_URL, useValue: environment.baseUrl },
+    provideToastr({
+      timeOut: 4000,
+      positionClass: 'toast-top-right',
+      closeButton: true,
+      progressBar: true,
+      preventDuplicates: true,
+    }),
     provideBrowserGlobalErrorListeners(),
+    provideHttpClient(withInterceptors(interceptors)),
     // withComponentInputBinding lets route `data` flow straight into component inputs.
     provideRouter(routes, withComponentInputBinding()),
   ],

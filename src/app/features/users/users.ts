@@ -37,7 +37,7 @@ export class Users {
 
   /** You cannot deactivate or reset your own account from this screen. */
   protected isMe(user: User): boolean {
-    return user.id === this.auth.currentUser()?.id;
+    return user.id === this.auth.currentUser()?.Id;
   }
 
   protected addEmployee(): void {

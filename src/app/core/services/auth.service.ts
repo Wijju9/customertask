@@ -1,59 +1,46 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { UserType } from '../models/models';
 import { DbService } from './db.service';
+import { UserService } from './user.service';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+import { LoginModel, UserModel } from '../models/user.model';
+import { IResponse } from '../models/response.model';
+import { ToastrService } from 'ngx-toastr';
+import { LocalStorageService } from './storage.service';
+import { NotifyService } from './notify.service';
+import { SessionService } from './session.service';
 
 const SESSION_KEY = 'filedesk_session';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly store = inject(DbService);
+  private readonly session = inject(SessionService);
+  private readonly userService = inject(UserService);
+  private readonly notify = inject(NotifyService);
 
-  private readonly sessionUserId = signal<number | null>(this.readSession());
+  /** The logged-in user, or null. */
+  readonly currentUser = this.session.user;
+  readonly isLoggedIn = this.session.isLoggedIn;
+  readonly isAdmin = computed(() => this.session.user()?.UserType === UserType.Admin);
 
-  /** The logged-in user, or null. Inactive users are treated as logged out. */
-  readonly currentUser = computed(() => {
-    const id = this.sessionUserId();
-    return this.store.db().users.find((user) => user.id === id && user.isActive) ?? null;
-  });
 
-  readonly isLoggedIn = computed(() => this.currentUser() !== null);
-  readonly isAdmin = computed(() => this.currentUser()?.userType === UserType.Admin);
-
-  /** Returns an error message, or null when the login worked. */
-  login(identifier: string, password: string): string | null {
-    const wanted = identifier.trim().toLowerCase();
-    const user = this.store
-      .db()
-      .users.find((u) => (u.mobileNo === wanted || u.email.toLowerCase() === wanted) && u.password === password);
-
-    if (!user) return 'Mobile/email or password is incorrect.';
-    if (!user.isActive) return 'This account is inactive. Contact your admin.';
-
-    this.sessionUserId.set(user.id);
-    this.writeSession(user.id);
-    return null;
+  login(identifier: string, password: string): Observable<IResponse<UserModel>> {
+    return this.userService.Login({ Email: identifier.trim(), Password: password }).pipe(
+      map((response) => {
+        if (!response.Data) throw new Error(response.Message || 'Login failed. Please try again.');
+        return response as IResponse<UserModel>;
+      }),
+      tap((response) => {
+        const data = response.Data!;
+        this.session.start(data, data.Token ?? null);
+        this.notify.success(response.Message || 'Login successful.');
+      }),
+    );
   }
 
   logout(): void {
-    this.sessionUserId.set(null);
-    this.writeSession(null);
+    this.session.clear();
+    this.notify.info('You have been logged out.');
   }
 
-  private readSession(): number | null {
-    try {
-      const saved = localStorage.getItem(SESSION_KEY);
-      return saved ? Number(saved) : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private writeSession(userId: number | null): void {
-    try {
-      if (userId === null) localStorage.removeItem(SESSION_KEY);
-      else localStorage.setItem(SESSION_KEY, String(userId));
-    } catch {
-      // Ignore: the session just will not survive a page refresh.
-    }
-  }
 }

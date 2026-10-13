@@ -19,7 +19,7 @@ export class TaskService {
   readonly visibleTasks = computed(() => {
     const tasks = this.store.db().customerTasks;
     const user = this.auth.currentUser();
-    return this.auth.isAdmin() ? tasks : tasks.filter((task) => task.userId === user?.id);
+    return this.auth.isAdmin() ? tasks : tasks.filter((task) => task.userId === user?.Id);
   });
 
   nameOf(taskId: number): string {

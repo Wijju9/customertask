@@ -13,6 +13,7 @@ import {
   passwordsMatch,
 } from '../../../core/validators/form-validators';
 import { NotifyService } from '../../../shared/notify.service';
+import { UserType } from '../../../core/models/models';
 
 @Component({
   selector: 'app-register',
@@ -45,7 +46,23 @@ export class Register {
 
     const { mobileNo, email, password } = this.form.getRawValue();
     this.users.addEmployee({ mobileNo, email, password });
-    this.notify.show('Registered. Please log in.');
-    this.router.navigateByUrl('/auth/login');
+
+
+    this.users.Insert({ Email: email, Password: password, MobileNo : mobileNo, Name : "Test" ,IsAdmin : true, UserType : UserType.Admin }).subscribe({
+      next: (response) => {
+        if (response.Status) {
+          // Handle successful login, e.g., store token, navigate to dashboard
+          this.router.navigateByUrl('/dashboard');
+        } else {
+
+        }
+      },
+      error: (err) => {
+
+      },
+    });
+
+    // this.notify.show('Registered. Please log in.');
+    // this.router.navigateByUrl('/auth/login');
   }
 }

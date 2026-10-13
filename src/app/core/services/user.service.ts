@@ -1,6 +1,10 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { User, UserType } from '../models/models';
 import { DbService } from './db.service';
+import { Observable } from 'rxjs';
+import { IResponse } from '../models/response.model';
+import { LoginModel, UserModel } from '../models/user.model';
+import { BaseService } from './base.service';
 
 export interface NewEmployee {
   mobileNo: string;
@@ -9,7 +13,7 @@ export interface NewEmployee {
 }
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
+export class UserService extends BaseService{
   private readonly store = inject(DbService);
 
   readonly users = computed(() => this.store.db().users);
@@ -66,5 +70,13 @@ export class UserService {
       ...db,
       users: db.users.map((user) => (user.id === userId ? change(user) : user)),
     }));
+  }
+
+  Login(user: LoginModel): Observable<IResponse<any>> {
+    return this.http.post<IResponse<any>>(`${this.apiBaseUrl}User/Login`, user);
+  }
+
+  Insert(user: UserModel): Observable<IResponse<any>> {
+    return this.http.post<IResponse<any>>(`${this.apiBaseUrl}User/Insert`, user);
   }
 }
