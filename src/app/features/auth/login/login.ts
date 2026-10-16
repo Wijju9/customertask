@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { UserService } from '../../../core/services/user.service';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -18,7 +17,6 @@ import { finalize } from 'rxjs';
 export class Login {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly userService = inject(UserService);
   private readonly route = inject(ActivatedRoute);
 
   protected readonly form = inject(FormBuilder).nonNullable.group({

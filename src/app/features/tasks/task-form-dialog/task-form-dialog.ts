@@ -46,7 +46,7 @@ export class TaskFormDialog {
     rakeFileId: [this.masters.activeItems('rakeFiles')[0]?.id ?? 0, Validators.required],
     documents: [[] as number[]],
     status: ['Pending' as TaskStatus],
-    userId: [this.auth.currentUser()?.Id ?? 0],
+    userId: [this.auth.currentUser()?.id ?? 0],
     notes: [''],
   });
 

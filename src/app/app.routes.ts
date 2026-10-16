@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard, authGuard, guestGuard } from './core/guards/auth.guards';
+import { TableIds } from './core/models/tableid.enum';
 
 export const routes: Routes = [
   // Public pages: login and register share the same two-panel layout.
@@ -38,13 +39,13 @@ export const routes: Routes = [
       {
         path: 'works',
         canActivate: [adminGuard],
-        data: { key: 'works', label: 'Work' },
+        data: { key: TableIds.Work.toString() , label: 'Work' },
         loadComponent: () => import('./features/masters/masters').then((m) => m.Masters),
       },
       {
         path: 'rake-files',
         canActivate: [adminGuard],
-        data: { key: 'rakeFiles', label: 'Rake file' },
+        data: { key: TableIds.Rake.toString() , label: 'Rake file' },
         loadComponent: () => import('./features/masters/masters').then((m) => m.Masters),
       },
       {

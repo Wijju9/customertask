@@ -1,17 +1,19 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
+import { Observable, map, tap } from 'rxjs';
 import { UserType } from '../models/models';
-import { DbService } from './db.service';
-import { UserService } from './user.service';
-import { catchError, map, Observable, of, tap } from 'rxjs';
-import { LoginModel, UserModel } from '../models/user.model';
 import { IResponse } from '../models/response.model';
-import { ToastrService } from 'ngx-toastr';
-import { LocalStorageService } from './storage.service';
-import { NotifyService } from './notify.service';
-import { SessionService } from './session.service';
+import { UserModel } from '../models/user.model';
+import { NotifyService } from '../../shared/notify.service';
+import { SessionService, SessionUser } from './session.service';
+import { UserService } from './user.service';
 
-const SESSION_KEY = 'filedesk_session';
-
+/**
+ * Login and logout.
+ *
+ * Failures (wrong password, server down, ...) are shown as a toast by
+ * errorInterceptor and arrive here as an HTTP error, so this service only
+ * handles the success path.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly session = inject(SessionService);
@@ -21,9 +23,12 @@ export class AuthService {
   /** The logged-in user, or null. */
   readonly currentUser = this.session.user;
   readonly isLoggedIn = this.session.isLoggedIn;
-  readonly isAdmin = computed(() => this.session.user()?.UserType === UserType.Admin);
+  readonly isAdmin = computed(() => this.session.user()?.isAdmin === true);
 
-
+  /**
+   * Calls the login API. On `{ Status: true, Data: user }` it starts the
+   * session (user + token) and shows a success toast.
+   */
   login(identifier: string, password: string): Observable<IResponse<UserModel>> {
     return this.userService.Login({ Email: identifier.trim(), Password: password }).pipe(
       map((response) => {
@@ -32,7 +37,7 @@ export class AuthService {
       }),
       tap((response) => {
         const data = response.Data!;
-        this.session.start(data, data.Token ?? null);
+        this.session.start(toSessionUser(data), data.Token ?? null);
         this.notify.success(response.Message || 'Login successful.');
       }),
     );
@@ -42,5 +47,16 @@ export class AuthService {
     this.session.clear();
     this.notify.info('You have been logged out.');
   }
+}
 
+function toSessionUser(data: UserModel): SessionUser {
+  const userType = data.UserType === UserType.Admin || data.IsAdmin ? UserType.Admin : UserType.Employee;
+  return {
+    id: data.Id ?? 0,
+    name: data.Name ?? '',
+    email: data.Email ?? '',
+    mobileNo: data.MobileNo ?? '',
+    userType,
+    isAdmin: userType === UserType.Admin,
+  };
 }
