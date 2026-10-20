@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,8 @@ import { MIN_PASSWORD_LENGTH } from '../../core/validators/form-validators';
 import { PromptService } from '../../shared/dialogs/prompt-dialog';
 import { NotifyService } from '../../shared/notify.service';
 import { UserFormDialog } from './user-form-dialog/user-form-dialog';
+import { DataTableRequestModel } from '../../core/models/dataTableRequest.model';
+import { UserModel } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-users',
@@ -24,8 +26,14 @@ export class Users {
   private readonly prompt = inject(PromptService);
   private readonly notify = inject(NotifyService);
 
-  protected readonly users = this.userService.users;
-  protected readonly columns = ['mobile', 'email', 'role', 'tasks', 'status', 'actions'];
+  //protected readonly users = this.userService.users;
+  protected readonly items = signal<UserModel[]>([]);
+  protected readonly columns = ['Mobile', 'Email', 'Name', 'Status', 'Actions'];
+  dataTableRequestModel = new DataTableRequestModel();
+
+  constructor() {
+    this.getAllUser();
+  }
 
   protected roleName(user: User): string {
     return user.userType === UserType.Admin ? 'Admin' : 'Employee';
@@ -46,8 +54,23 @@ export class Users {
       .afterClosed()
       .subscribe((employee) => {
         if (!employee) return; // cancelled
-        this.userService.addEmployee(employee);
-        this.notify.show('Employee added');
+        //this.userService.addEmployee(employee);
+        this.userService.Insert({
+          Email: employee.email, MobileNo: employee.mobileNo, Name: employee.name,
+          Password: employee.password, IsAdmin: false, IsActive: true, UserType: UserType.Employee,
+        }).subscribe({
+          next: (response: any) => {
+            if (response.Status) {
+              this.getAllUser()
+              this.notify.show('Employee added');
+            } else {
+              console.error('Insert/Update failed:', response.Message);
+            }
+          },
+          error: (error: any) => {
+            console.error('API error:', error);
+          }
+        })
       });
   }
 
@@ -67,5 +90,17 @@ export class Users {
         this.userService.resetPassword(user.id, password);
         this.notify.show('Password updated');
       });
+  }
+
+  protected getAllUser() {
+    this.dataTableRequestModel.FilterObj = { ...this.dataTableRequestModel.FilterObj, IsActive: true, IsAdmin: true}
+    this.userService.GetAll({ ...this.dataTableRequestModel }).subscribe((response) => {
+      if (response.Status) {
+        const data = response.Data as any;
+        this.items.set(data.Data); // Add the new items
+      } else {
+        console.error('Failed to fetch Rake data:', response.Message);
+      }
+    });
   }
 }

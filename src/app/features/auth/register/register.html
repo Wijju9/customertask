@@ -4,6 +4,16 @@
 
   <form [formGroup]="form" (ngSubmit)="submit()">
     <mat-form-field class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" inputmode="name"  />
+      @if (form.controls.name.hasError('name')) {
+        <mat-error>Add Unique Name</mat-error>
+      } @else {
+        <mat-error>Enter a valid Name</mat-error>
+      }
+    </mat-form-field>
+
+      <mat-form-field class="full-width">
       <mat-label>Mobile number (10 digits)</mat-label>
       <input matInput formControlName="mobileNo" inputmode="numeric" maxlength="10" />
       @if (form.controls.mobileNo.hasError('mobileTaken')) {

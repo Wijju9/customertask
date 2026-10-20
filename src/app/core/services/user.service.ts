@@ -5,15 +5,17 @@ import { Observable } from 'rxjs';
 import { IResponse } from '../models/response.model';
 import { LoginModel, UserModel } from '../models/user.model';
 import { BaseService } from './base.service';
+import { DataTableRequestModel } from '../models/dataTableRequest.model';
 
 export interface NewEmployee {
   mobileNo: string;
   email: string;
   password: string;
+  name: string;
 }
 
 @Injectable({ providedIn: 'root' })
-export class UserService extends BaseService{
+export class UserService extends BaseService {
   private readonly store = inject(DbService);
 
   readonly users = computed(() => this.store.db().users);
@@ -79,4 +81,17 @@ export class UserService extends BaseService{
   Insert(user: UserModel): Observable<IResponse<any>> {
     return this.http.post<IResponse<any>>(`${this.apiBaseUrl}User/Insert`, user);
   }
+
+  Update(user: UserModel): Observable<IResponse<any>> {
+    return this.http.put<IResponse<any>>(`${this.apiBaseUrl}User/Update`, user);
+  }
+
+  GetAll(dataTableRequestModel: DataTableRequestModel): Observable<IResponse<UserModel[]>> {
+    return this.http.post<IResponse<UserModel[]>>(`${this.apiBaseUrl}User/GetAll`, dataTableRequestModel);
+  }
+
+  GetById(id: any): Observable<IResponse<UserModel>> {
+    return this.http.get<IResponse<UserModel>>(`${this.apiBaseUrl}User/GetById/${id.toString()}`);
+  }
+
 }

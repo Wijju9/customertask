@@ -25,6 +25,7 @@ export class UserFormDialog {
   protected readonly minPasswordLength = MIN_PASSWORD_LENGTH;
 
   protected readonly form = inject(FormBuilder).nonNullable.group({
+    name:['', [Validators.required,  mobileAvailable(this.users)]],
     mobileNo: ['', [Validators.required, Validators.pattern(MOBILE_PATTERN), mobileAvailable(this.users)]],
     email: ['', [Validators.required, Validators.email, emailAvailable(this.users)]],
     password: ['', [Validators.required, Validators.minLength(MIN_PASSWORD_LENGTH)]],

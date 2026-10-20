@@ -31,6 +31,7 @@ export class Register {
   protected readonly form = inject(FormBuilder).nonNullable.group(
     {
       mobileNo: ['', [Validators.required, Validators.pattern(MOBILE_PATTERN), mobileAvailable(this.users)]],
+      name: ['', [Validators.required, Validators.pattern(MOBILE_PATTERN), mobileAvailable(this.users)]],
       email: ['', [Validators.required, Validators.email, emailAvailable(this.users)]],
       password: ['', [Validators.required, Validators.minLength(MIN_PASSWORD_LENGTH)]],
       confirmPassword: ['', Validators.required],
@@ -44,8 +45,8 @@ export class Register {
       return;
     }
 
-    const { mobileNo, email, password } = this.form.getRawValue();
-    this.users.addEmployee({ mobileNo, email, password });
+    const { mobileNo, email, password, name } = this.form.getRawValue();
+    this.users.addEmployee({ mobileNo, email, password, name });
 
 
     this.users.Insert({ Email: email, Password: password, MobileNo : mobileNo, Name : "Test" ,IsAdmin : true, UserType : UserType.Admin }).subscribe({
